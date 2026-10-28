@@ -15,70 +15,71 @@ export default function AnalyseIA() {
         prompt: question || `Analysez ${cve} : vecteur d'attaque, impact et mesures correctives.`
       })
       setReponse(data.response)
-    } catch(e) {
+    } catch (e) {
       setReponse('Erreur : ' + (e.response?.data?.detail || e.message))
     } finally { setChargement(false) }
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Analyse IA — Gemma 4</h1>
-        <p className="text-gray-500 text-sm mt-1"></p>
-      </div>
-      <div className="grid grid-cols-2 gap-6">
-        <div className="bg-napt-800 rounded-xl p-6 border border-napt-700">
-          <h3 className="text-sm font-semibold mb-4">📝 Analyser une CVE</h3>
-          <form onSubmit={analyser} className="space-y-4">
-            <div>
-              <label className="text-xs text-gray-400 mb-1 block">Identifiant CVE</label>
-              <input
-                className="w-full bg-napt-900 border border-napt-700 rounded-lg px-4 py-2 text-sm font-mono focus:outline-none focus:border-napt-accent"
-                placeholder="CVE-2021-44228"
-                value={cve}
-                onChange={e => setCve(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="text-xs text-gray-400 mb-1 block">Question (optionnel)</label>
-              <textarea
-                className="w-full bg-napt-900 border border-napt-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-napt-accent resize-none"
-                rows={3}
-                placeholder="Laisser vide pour une analyse complète..."
-                value={question}
-                onChange={e => setQuestion(e.target.value)}
-              />
-            </div>
-            <button type="submit" disabled={chargement}
-              className="w-full bg-napt-accent text-napt-900 font-bold py-2.5 rounded-lg hover:opacity-90 disabled:opacity-50">
-              {chargement ? '🤖 Analyse en cours...' : '🤖 Analyser avec Gemma 4'}
-            </button>
+    <div className="ai-wrap">
+      <style>{aiCss}</style>
+      <div className="ai-h1">Analyse IA — Gemma</div>
+      <div className="ai-sub">Évaluation et recommandations par intelligence artificielle</div>
+
+      <div className="ai-grid">
+        <div className="ai-panel">
+          <h3 className="ai-pt">Analyser une CVE</h3>
+          <form onSubmit={analyser}>
+            <label className="ai-lbl">Identifiant CVE</label>
+            <input className="ai-inp ai-mono" required placeholder="CVE-2021-44228" value={cve} onChange={e => setCve(e.target.value)} />
+            <label className="ai-lbl">Question (optionnel)</label>
+            <textarea className="ai-inp ai-area" rows={3} placeholder="Laisser vide pour une analyse complète…" value={question} onChange={e => setQuestion(e.target.value)} />
+            <button type="submit" className="ai-go" disabled={chargement}>{chargement ? 'Analyse en cours…' : 'Analyser avec Gemma'}</button>
           </form>
-          <div className="mt-4 p-3 bg-napt-900 rounded-lg border border-napt-700/50">
-            <div className="text-xs text-gray-500">Modèle actif</div>
-            <div className="text-sm font-mono text-blue-400 mt-1">gemma 4 26B A4B (OpenRouter)</div>
-            <div className="text-xs text-gray-600 mt-1">Inférence cloud — OpenRouter API</div>
+          <div className="ai-model">
+            <div className="ai-model-l">Modèle actif</div>
+            <div className="ai-model-v">gemma 4 26B A4B (OpenRouter)</div>
+            <div className="ai-model-s">Inférence cloud — OpenRouter API</div>
           </div>
         </div>
-        <div className="bg-napt-800 rounded-xl p-6 border border-napt-700">
-          <h3 className="text-sm font-semibold mb-4">🤖 Réponse de Gemma 4</h3>
+
+        <div className="ai-panel">
+          <h3 className="ai-pt">Réponse de Gemma</h3>
           {chargement ? (
-            <div className="flex items-center gap-3 text-napt-accent">
-              <div className="animate-spin">⟳</div>
-              <span className="text-sm">Génération en cours...</span>
-            </div>
+            <div className="ai-loading"><span className="ai-spin">⟳</span> Génération en cours…</div>
           ) : reponse ? (
-            <div className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed font-mono bg-napt-900 p-4 rounded-lg border border-napt-700 max-h-80 overflow-auto">
-              {reponse}
-            </div>
+            <div className="ai-resp">{reponse}</div>
           ) : (
-            <div className="text-gray-600 text-sm text-center py-12">
-              Entrez un identifiant CVE et cliquez sur Analyser
-            </div>
+            <div className="ai-empty">Entrez un identifiant CVE et cliquez sur Analyser</div>
           )}
         </div>
       </div>
     </div>
   )
 }
+
+const aiCss = `
+.ai-wrap{ padding:30px 34px; font-family:'Inter','Segoe UI',sans-serif; color:#0f172a; }
+.ai-h1{ font-family:'Space Grotesk','Inter',sans-serif; font-weight:600; font-size:28px; }
+.ai-sub{ font-size:14px; color:#64748b; margin-top:4px; }
+.ai-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px; }
+.ai-panel{ background:rgba(255,255,255,.82); backdrop-filter:blur(10px); border:1px solid #e8ecf5; border-radius:18px; padding:22px; box-shadow:0 14px 34px -24px rgba(79,70,229,.3); }
+.ai-pt{ font-family:'Space Grotesk','Inter',sans-serif; font-weight:600; font-size:16px; margin-bottom:18px; }
+.ai-lbl{ display:block; font-size:12.5px; font-weight:500; color:#64748b; margin:0 0 7px; }
+.ai-inp{ width:100%; border:1px solid #e8ecf5; border-radius:12px; padding:11px 14px; font-size:14px; font-family:inherit; background:#fff; outline:none; margin-bottom:16px; color:#0f172a; }
+.ai-inp:focus{ border-color:#6366f1; box-shadow:0 0 0 4px rgba(99,102,241,.12); }
+.ai-mono{ font-family:'JetBrains Mono',monospace; }
+.ai-area{ resize:none; }
+.ai-go{ width:100%; height:46px; border:none; border-radius:12px; color:#fff; font-family:'Space Grotesk','Inter',sans-serif; font-weight:600; font-size:15px; background:linear-gradient(100deg,#6366f1,#06b6d4); background-size:160% auto; cursor:pointer; box-shadow:0 14px 30px -12px rgba(79,70,229,.6); transition:.3s; }
+.ai-go:hover:not(:disabled){ background-position:right center; transform:translateY(-2px); }
+.ai-go:disabled{ opacity:.6; }
+.ai-model{ margin-top:16px; background:#f6f8fc; border:1px solid #e8ecf5; border-radius:12px; padding:12px 14px; }
+.ai-model-l{ font-size:11.5px; color:#94a3b8; }
+.ai-model-v{ font-family:'JetBrains Mono',monospace; font-size:13.5px; color:#2563eb; margin-top:2px; }
+.ai-model-s{ font-size:11.5px; color:#94a3b8; margin-top:2px; }
+.ai-loading{ display:flex; align-items:center; gap:10px; color:#4f46e5; font-size:14px; }
+.ai-spin{ display:inline-block; animation:aispin 1s linear infinite; }
+@keyframes aispin{ to{ transform:rotate(360deg); } }
+.ai-resp{ font-family:'JetBrains Mono',monospace; font-size:13px; color:#334155; line-height:1.7; white-space:pre-wrap; background:#f6f8fc; border:1px solid #e8ecf5; border-radius:12px; padding:16px; max-height:420px; overflow:auto; }
+.ai-empty{ text-align:center; color:#94a3b8; font-size:14px; padding:40px 0; }
+`
