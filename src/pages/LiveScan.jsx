@@ -1,3 +1,4 @@
+// LV_CLEAN_V3 — page live sans boutons Historique/Telecharger (doublons retires)
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -134,18 +135,7 @@ export default function LiveScan() {
             {connected ? "● WebSocket connecté" : "○ WebSocket déconnecté"}
           </span>
           <span style={{ fontSize: 13, fontWeight: 600, color: sl.color, background: "#fff", border: "1px solid #e8ecf5", borderRadius: 999, padding: "5px 14px" }}>{sl.text}</span>
-          {isDone ? (
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => navigate(`/scans/${scanId}`)} style={{ ...glass, color: "#64748b", borderRadius: 10, padding: "7px 14px", cursor: "pointer", fontSize: 13 }}>Historique →</button>
-              <button onClick={() => {
-                fetch(`/api/scans/${scanId}/report`, { headers: { Authorization: `Bearer ${token}` } })
-                  .then((r) => r.text()).then((html) => { const w = window.open(); w.document.write(html); })
-                  .catch(() => alert("Rapport non disponible"));
-              }} className="lv-primary">⬇ Télécharger le rapport</button>
-            </div>
-          ) : (
-            <button onClick={stopScan} className="lv-stop">■ Arrêter</button>
-          )}
+          {!isDone && <button onClick={stopScan} className="lv-stop">■ Arrêter</button>}
         </div>
       </div>
 
@@ -279,7 +269,7 @@ export default function LiveScan() {
               <div style={{ fontSize: 30, marginBottom: 6 }}>✅</div>
               <div style={{ color: "#0d9488", fontWeight: 700, fontSize: 17 }}>Scan terminé avec succès</div>
               {ragData?.cve_id && <div style={{ fontSize: 13, color: "#0f766e", marginTop: 6 }}>{ragData.cve_id} · CVSS {ragData.cvss}</div>}
-              <button onClick={() => navigate(`/scans/${scanId}`)} className="lv-primary" style={{ marginTop: 14 }}>Voir les détails →</button>
+              <button onClick={() => navigate('/scans')} className="lv-primary" style={{ marginTop: 14 }}>Voir tous les scans →</button>
             </div>
           )}
 

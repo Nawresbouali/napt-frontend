@@ -1,3 +1,4 @@
+// SR_FIX2 — reset du resultat au changement d'onglet (corrige la page noire)
 import { useState } from "react"
 
 export default function ScanReseau() {
@@ -27,8 +28,8 @@ export default function ScanReseau() {
 
       <div className="sr-card">
         <div className="sr-tabs">
-          <button className={"sr-tab" + (mode === "network" ? " sr-on" : "")} onClick={() => setMode("network")}>Réseau local</button>
-          <button className={"sr-tab" + (mode === "target" ? " sr-on" : "")} onClick={() => setMode("target")}>Cible spécifique</button>
+          <button className={"sr-tab" + (mode === "network" ? " sr-on" : "")} onClick={() => { setMode("network"); setResult(null); setError(null) }}>Réseau local</button>
+          <button className={"sr-tab" + (mode === "target" ? " sr-on" : "")} onClick={() => { setMode("target"); setResult(null); setError(null) }}>Cible spécifique</button>
         </div>
 
         {mode === "target" && (
@@ -41,7 +42,7 @@ export default function ScanReseau() {
 
         {error && <div className="sr-err">{error}</div>}
 
-        {result && mode === "network" && (
+        {result && result.hosts && mode === "network" && (
           <div className="sr-res">
             <p className="sr-ok">{result.hosts_found} machine(s) trouvée(s)</p>
             {result.hosts.map((h, i) => (
@@ -50,7 +51,7 @@ export default function ScanReseau() {
           </div>
         )}
 
-        {result && mode === "target" && (
+        {result && result.ports && mode === "target" && (
           <div className="sr-res">
             <p className="sr-ok">{result.ports.length} port(s) sur {result.target}</p>
             <table className="sr-table">
