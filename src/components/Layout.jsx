@@ -1,3 +1,4 @@
+// LX_CHATBOT — Assistant IA ajoute au menu admin
 import React from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 
@@ -6,6 +7,7 @@ const liensAdmin = [
   { vers: '/scans',           icone: '🔍', label: 'Scans' },
   { vers: '/recherche-cve',   icone: '🛡️', label: 'Recherche CVE' },
   { vers: '/analyse-ia',      icone: '🤖', label: 'Analyse IA' },
+  { vers: '/chatbot',         icone: '💬', label: 'Assistant IA' },
   { vers: '/scan-reseau',     icone: '🌐', label: 'Scan Réseau' },
   { vers: '/rapports',        icone: '📄', label: 'Rapports PDF' },
   { vers: '/audit',           icone: '📋', label: 'Audit' },
