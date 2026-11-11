@@ -1,8 +1,23 @@
-// SR_FIX2 — reset du resultat au changement d'onglet (corrige la page noire)
+// SR_SCAN — bouton Scanner (lance un scan N.A.P.T sur la cible decouverte) + reset onglet
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function ScanReseau() {
   const token = localStorage.getItem("napt_token")
+  const navigate = useNavigate()
+  const extractIp = (s) => { const m = String(s).match(/(\d+\.\d+\.\d+\.\d+)/); return m ? m[1] : s }
+  const scannerCible = async (ip) => {
+    try {
+      const r = await fetch("/api/scans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ target: ip, target_type: "ip" })
+      })
+      const d = await r.json()
+      if (d.id) navigate(`/scans/${d.id}/live`)
+      else alert("Erreur au lancement du scan")
+    } catch (e) { alert("Erreur au lancement du scan") }
+  }
   const [mode, setMode] = useState("network")
   const [host, setHost] = useState("")
   const [loading, setLoading] = useState(false)
@@ -46,7 +61,11 @@ export default function ScanReseau() {
           <div className="sr-res">
             <p className="sr-ok">{result.hosts_found} machine(s) trouvée(s)</p>
             {result.hosts.map((h, i) => (
-              <div className="sr-host" key={i}><span className="sr-mono">{h.host}</span><span className="sr-up">{h.status}</span></div>
+              <div className="sr-host" key={i}>
+                <span className="sr-mono">{h.host}</span>
+                <span className="sr-up">{h.status}</span>
+                <button className="sr-scan" onClick={() => scannerCible(extractIp(h.host))}>⚡ Scanner</button>
+              </div>
             ))}
           </div>
         )}
@@ -65,6 +84,7 @@ export default function ScanReseau() {
                 </tr>
               ))}</tbody>
             </table>
+            <button className="sr-scan-big" onClick={() => scannerCible(result.target)}>⚡ Lancer un scan N.A.P.T complet sur {result.target}</button>
           </div>
         )}
       </div>
@@ -100,4 +120,8 @@ const srCss = `
 .sr-b-open{ background:rgba(16,185,129,.14); color:#047857; }
 .sr-b-closed{ background:#eef2f8; color:#64748b; }
 .sr-ver{ color:#94a3b8; font-size:12.5px; }
+.sr-scan{ margin-left:12px; font-size:12px; font-weight:600; padding:6px 13px; border:none; border-radius:9px; color:#fff; background:linear-gradient(100deg,#6366f1,#06b6d4); cursor:pointer; transition:.25s; white-space:nowrap; }
+.sr-scan:hover{ transform:translateY(-1px); box-shadow:0 8px 18px -8px rgba(99,102,241,.6); }
+.sr-scan-big{ margin-top:16px; width:100%; height:46px; border:none; border-radius:12px; color:#fff; font-family:'Space Grotesk','Inter',sans-serif; font-weight:600; font-size:15px; background:linear-gradient(100deg,#6366f1,#06b6d4); background-size:160% auto; cursor:pointer; box-shadow:0 14px 30px -12px rgba(79,70,229,.6); transition:.3s; }
+.sr-scan-big:hover{ background-position:right center; transform:translateY(-2px); }
 `
